@@ -12,6 +12,8 @@ async function fetchAllRows<T>(
   table: string,
   orderCol = 'id',
 ): Promise<T[]> {
+  if (!supabase) return []
+
   const PAGE = 1000
   let all: T[] = []
   let from = 0
@@ -61,6 +63,8 @@ export function useSupabaseData() {
     fetchData()
 
     // Real-time subscriptions
+    if (!supabase) return
+
     const channel = supabase
       .channel('dashboard-changes')
       .on(
