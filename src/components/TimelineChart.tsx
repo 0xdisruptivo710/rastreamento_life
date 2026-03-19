@@ -15,10 +15,9 @@ import {
 import { TrendingUp } from 'lucide-react'
 import { format, parseISO, subDays, startOfDay, startOfWeek, startOfMonth } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import type { RastreamentoLife, RastreamentoLifeOF } from '@/lib/types'
+import type { RastreamentoLifeOF } from '@/lib/types'
 
 interface Props {
-  rastreamento: RastreamentoLife[]
   rastreamentoOF: RastreamentoLifeOF[]
 }
 
@@ -48,7 +47,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   )
 }
 
-export default function TimelineChart({ rastreamento, rastreamentoOF }: Props) {
+export default function TimelineChart({ rastreamentoOF }: Props) {
   const [period, setPeriod] = useState<Period>('30d')
   const [groupBy, setGroupBy] = useState<GroupBy>('day')
   const [chartType, setChartType] = useState<ChartType>('area')
@@ -67,36 +66,24 @@ export default function TimelineChart({ rastreamento, rastreamentoOF }: Props) {
       return format(startOfMonth(d), 'yyyy-MM')
     }
 
-    const buckets = new Map<string, { leads: number; leadsOF: number }>()
-
-    rastreamento.forEach(r => {
-      const d = parseISO(r.created_at)
-      if (cutoff && d < cutoff) return
-      const key = bucketKey(r.created_at)
-      const b = buckets.get(key) || { leads: 0, leadsOF: 0 }
-      b.leads++
-      buckets.set(key, b)
-    })
+    const buckets = new Map<string, number>()
 
     rastreamentoOF.forEach(r => {
       const d = parseISO(r.created_at)
       if (cutoff && d < cutoff) return
       const key = bucketKey(r.created_at)
-      const b = buckets.get(key) || { leads: 0, leadsOF: 0 }
-      b.leadsOF++
-      buckets.set(key, b)
+      buckets.set(key, (buckets.get(key) || 0) + 1)
     })
 
     return Array.from(buckets.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([date, vals]) => ({
+      .map(([date, leads]) => ({
         date: groupBy === 'month'
           ? format(parseISO(date + '-01'), 'MMM yy', { locale: ptBR })
           : format(parseISO(date), 'dd/MM', { locale: ptBR }),
-        'Leads Trafego': vals.leads,
-        'Leads OF': vals.leadsOF,
+        Leads: leads,
       }))
-  }, [rastreamento, rastreamentoOF, period, groupBy])
+  }, [rastreamentoOF, period, groupBy])
 
   const periods: { value: Period; label: string }[] = [
     { value: '7d', label: '7 dias' },
@@ -185,10 +172,6 @@ export default function TimelineChart({ rastreamento, rastreamentoOF }: Props) {
                   <stop offset="0%" stopColor="#6366f1" stopOpacity={0.3} />
                   <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="gradientOF" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
               <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
@@ -196,17 +179,10 @@ export default function TimelineChart({ rastreamento, rastreamentoOF }: Props) {
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
-                dataKey="Leads Trafego"
+                dataKey="Leads"
                 stroke="#6366f1"
                 strokeWidth={2}
                 fill="url(#gradientLeads)"
-              />
-              <Area
-                type="monotone"
-                dataKey="Leads OF"
-                stroke="#10b981"
-                strokeWidth={2}
-                fill="url(#gradientOF)"
               />
             </AreaChart>
           ) : (
@@ -215,8 +191,7 @@ export default function TimelineChart({ rastreamento, rastreamentoOF }: Props) {
               <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="Leads Trafego" fill="#6366f1" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Leads OF" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Leads" fill="#6366f1" radius={[4, 4, 0, 0]} />
             </BarChart>
           )}
         </ResponsiveContainer>
@@ -225,11 +200,7 @@ export default function TimelineChart({ rastreamento, rastreamentoOF }: Props) {
       <div className="flex justify-center gap-6 mt-4">
         <div className="flex items-center gap-2 text-xs">
           <div className="w-3 h-1.5 rounded-full bg-indigo-500" />
-          <span className="text-muted">Leads Trafego</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="w-3 h-1.5 rounded-full bg-emerald-500" />
-          <span className="text-muted">Leads OF (Etiquetados)</span>
+          <span className="text-muted">Leads (Rastreamento OF)</span>
         </div>
       </div>
     </div>

@@ -3,14 +3,14 @@
 import { Clock, ExternalLink } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import type { RastreamentoLife } from '@/lib/types'
+import type { RastreamentoLifeOF } from '@/lib/types'
 
 interface Props {
-  rastreamento: RastreamentoLife[]
+  rastreamentoOF: RastreamentoLifeOF[]
 }
 
-export default function RecentLeads({ rastreamento }: Props) {
-  const recent = [...rastreamento]
+export default function RecentLeads({ rastreamentoOF }: Props) {
+  const recent = [...rastreamentoOF]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 15)
 
@@ -41,6 +41,11 @@ export default function RecentLeads({ rastreamento }: Props) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-medium truncate">{lead.Nome || 'Sem nome'}</p>
+                {lead.Etiqueta && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-medium truncate max-w-[120px]">
+                    {lead.Etiqueta}
+                  </span>
+                )}
                 {lead.url && (
                   <a
                     href={lead.url}

@@ -1,16 +1,15 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Lightbulb, ArrowRight, AlertTriangle, Zap, RefreshCw, Rocket } from 'lucide-react'
-import type { RastreamentoLife, RastreamentoLifeOF } from '@/lib/types'
+import { Lightbulb, Zap, RefreshCw, Rocket } from 'lucide-react'
+import type { RastreamentoLifeOF } from '@/lib/types'
 import type { InsightItem } from '@/lib/types'
 
 interface Props {
-  rastreamento: RastreamentoLife[]
   rastreamentoOF: RastreamentoLifeOF[]
 }
 
-export default function InsightsPanel({ rastreamento, rastreamentoOF }: Props) {
+export default function InsightsPanel({ rastreamentoOF }: Props) {
   const insights = useMemo(() => {
     const items: InsightItem[] = []
 
@@ -20,7 +19,7 @@ export default function InsightsPanel({ rastreamento, rastreamentoOF }: Props) {
       items.push({
         type: 'follow_up',
         title: `${semEtiqueta.length} leads sem etiqueta precisam de follow-up`,
-        description: `Existem ${semEtiqueta.length} leads no painel OF sem nenhuma etiqueta. Esses leads podem estar sem atendimento. Recomendacao: entrar em contato e qualificar esses leads para mover no funil.`,
+        description: `Existem ${semEtiqueta.length} leads sem nenhuma etiqueta. Esses leads podem estar sem atendimento. Recomendacao: entrar em contato e qualificar esses leads para mover no funil.`,
         priority: 'high',
       })
     }
@@ -38,7 +37,7 @@ export default function InsightsPanel({ rastreamento, rastreamentoOF }: Props) {
 
     // 3. Best performing campaign
     const campMap = new Map<string, number>()
-    rastreamento.forEach(r => {
+    rastreamentoOF.forEach(r => {
       const c = r.Campanha?.trim()
       if (c) campMap.set(c, (campMap.get(c) || 0) + 1)
     })
@@ -47,14 +46,14 @@ export default function InsightsPanel({ rastreamento, rastreamentoOF }: Props) {
       items.push({
         type: 'improvement',
         title: `Campanha top: "${topCampaign[0].slice(0, 50)}..."`,
-        description: `Esta campanha gerou ${topCampaign[1]} leads (${((topCampaign[1] / rastreamento.length) * 100).toFixed(1)}% do total). Considere aumentar o orcamento ou criar variacoes similares para escalar os resultados.`,
+        description: `Esta campanha gerou ${topCampaign[1]} leads (${((topCampaign[1] / rastreamentoOF.length) * 100).toFixed(1)}% do total). Considere aumentar o orcamento ou criar variacoes similares para escalar os resultados.`,
         priority: 'medium',
       })
     }
 
     // 4. Analyze conjunto performance
     const conjMap = new Map<string, number>()
-    rastreamento.forEach(r => {
+    rastreamentoOF.forEach(r => {
       const c = r.Conjunto?.trim()
       if (c) conjMap.set(c, (conjMap.get(c) || 0) + 1)
     })
@@ -94,7 +93,7 @@ export default function InsightsPanel({ rastreamento, rastreamentoOF }: Props) {
     }
 
     // 7. Leads sem mensagem
-    const semMensagem = rastreamento.filter(r => !r.mensagem || r.mensagem.trim() === '')
+    const semMensagem = rastreamentoOF.filter(r => !r.mensagem || r.mensagem.trim() === '')
     if (semMensagem.length > 10) {
       items.push({
         type: 'improvement',
@@ -105,7 +104,7 @@ export default function InsightsPanel({ rastreamento, rastreamentoOF }: Props) {
     }
 
     return items
-  }, [rastreamento, rastreamentoOF])
+  }, [rastreamentoOF])
 
   const iconMap = {
     follow_up: Zap,

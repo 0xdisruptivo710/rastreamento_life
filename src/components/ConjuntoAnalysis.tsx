@@ -3,10 +3,10 @@
 import { useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Layers } from 'lucide-react'
-import type { RastreamentoLife } from '@/lib/types'
+import type { RastreamentoLifeOF } from '@/lib/types'
 
 interface Props {
-  rastreamento: RastreamentoLife[]
+  rastreamentoOF: RastreamentoLifeOF[]
 }
 
 interface TooltipPayloadItem {
@@ -25,10 +25,10 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   )
 }
 
-export default function ConjuntoAnalysis({ rastreamento }: Props) {
+export default function ConjuntoAnalysis({ rastreamentoOF }: Props) {
   const data = useMemo(() => {
     const map = new Map<string, number>()
-    rastreamento.forEach(r => {
+    rastreamentoOF.forEach(r => {
       const name = r.Conjunto?.trim()
       if (name) map.set(name, (map.get(name) || 0) + 1)
     })
@@ -40,7 +40,7 @@ export default function ConjuntoAnalysis({ rastreamento }: Props) {
         fullName: name,
         leads,
       }))
-  }, [rastreamento])
+  }, [rastreamentoOF])
 
   return (
     <div className="rounded-xl bg-card border border-border p-6 animate-fade-in" style={{ animationDelay: '600ms' }}>

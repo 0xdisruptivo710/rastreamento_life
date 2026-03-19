@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { Trophy, ChevronDown, ChevronUp, ArrowUpRight } from 'lucide-react'
-import type { RastreamentoLife } from '@/lib/types'
+import type { RastreamentoLifeOF } from '@/lib/types'
 
 interface Props {
-  rastreamento: RastreamentoLife[]
+  rastreamentoOF: RastreamentoLifeOF[]
 }
 
-export default function CampaignRanking({ rastreamento }: Props) {
+export default function CampaignRanking({ rastreamentoOF }: Props) {
   const [expanded, setExpanded] = useState(false)
 
   const campaignMap = new Map<string, number>()
-  rastreamento.forEach(r => {
+  rastreamentoOF.forEach(r => {
     const name = r.Campanha?.trim()
     if (name) campaignMap.set(name, (campaignMap.get(name) || 0) + 1)
   })
@@ -23,7 +23,7 @@ export default function CampaignRanking({ rastreamento }: Props) {
       rank: i + 1,
       name,
       leads,
-      percentage: ((leads / rastreamento.length) * 100).toFixed(1),
+      percentage: ((leads / rastreamentoOF.length) * 100).toFixed(1),
     }))
 
   const displayed = expanded ? sorted : sorted.slice(0, 8)

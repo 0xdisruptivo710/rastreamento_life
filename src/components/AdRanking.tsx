@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Megaphone, ChevronDown, ChevronUp } from 'lucide-react'
-import type { RastreamentoLife } from '@/lib/types'
+import type { RastreamentoLifeOF } from '@/lib/types'
 
 interface Props {
-  rastreamento: RastreamentoLife[]
+  rastreamentoOF: RastreamentoLifeOF[]
 }
 
 interface AdGroup {
@@ -15,11 +15,11 @@ interface AdGroup {
   leads: number
 }
 
-export default function AdRanking({ rastreamento }: Props) {
+export default function AdRanking({ rastreamentoOF }: Props) {
   const [expanded, setExpanded] = useState(false)
 
   const adMap = new Map<string, AdGroup>()
-  rastreamento.forEach(r => {
+  rastreamentoOF.forEach(r => {
     const ad = r['Anúncio']?.trim()
     const campaign = r.Campanha?.trim()
     const conjunto = r.Conjunto?.trim()

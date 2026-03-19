@@ -1,33 +1,29 @@
 'use client'
 
-import { Users, TrendingUp, Target, BarChart3, MessageSquare, Tag } from 'lucide-react'
-import type { RastreamentoLife, RastreamentoLifeOF, LifePlansNovosLeads } from '@/lib/types'
+import { Users, TrendingUp, Target, BarChart3, Tag, Megaphone } from 'lucide-react'
+import type { RastreamentoLifeOF } from '@/lib/types'
 
 interface KPICardsProps {
-  rastreamento: RastreamentoLife[]
   rastreamentoOF: RastreamentoLifeOF[]
-  novosLeads: LifePlansNovosLeads[]
 }
 
-export default function KPICards({ rastreamento, rastreamentoOF, novosLeads }: KPICardsProps) {
-  const totalLeadsTrafego = rastreamento.length
-  const totalLeadsOF = rastreamentoOF.length
-  const totalNovosLeads = novosLeads.length
+export default function KPICards({ rastreamentoOF }: KPICardsProps) {
+  const totalLeads = rastreamentoOF.length
 
-  const uniqueCampaigns = new Set(rastreamento.map(r => r.Campanha).filter(Boolean)).size
-  const uniqueAds = new Set(rastreamento.map(r => r['Anúncio']).filter(Boolean)).size
+  const uniqueCampaigns = new Set(rastreamentoOF.map(r => r.Campanha).filter(Boolean)).size
+  const uniqueAds = new Set(rastreamentoOF.map(r => r['Anúncio']).filter(Boolean)).size
 
-  const etiquetasOF = rastreamentoOF.filter(r => r.Etiqueta && r.Etiqueta.trim() !== '')
-  const cotouCount = etiquetasOF.filter(r =>
-    r.Etiqueta?.includes('COTOU')
+  const etiquetados = rastreamentoOF.filter(r => r.Etiqueta && r.Etiqueta.trim() !== '')
+  const cotouCount = etiquetados.filter(r =>
+    r.Etiqueta?.includes('COTOU') && !r.Etiqueta?.includes('NÃO COTOU')
   ).length
-  const taxaCotacao = totalLeadsOF > 0 ? ((cotouCount / totalLeadsOF) * 100).toFixed(1) : '0'
+  const taxaCotacao = totalLeads > 0 ? ((cotouCount / totalLeads) * 100).toFixed(1) : '0'
 
   const cards = [
     {
-      title: 'Total Leads Trafego',
-      value: totalLeadsTrafego.toLocaleString('pt-BR'),
-      subtitle: 'Rastreamento Life',
+      title: 'Total de Leads',
+      value: totalLeads.toLocaleString('pt-BR'),
+      subtitle: 'Rastreamento Life OF',
       icon: Users,
       color: 'from-indigo-500 to-purple-600',
       iconBg: 'bg-indigo-500/10',
@@ -35,21 +31,12 @@ export default function KPICards({ rastreamento, rastreamentoOF, novosLeads }: K
     },
     {
       title: 'Leads com Etiqueta',
-      value: totalLeadsOF.toLocaleString('pt-BR'),
-      subtitle: `${etiquetasOF.length} etiquetados`,
+      value: etiquetados.length.toLocaleString('pt-BR'),
+      subtitle: `${totalLeads - etiquetados.length} sem etiqueta`,
       icon: Tag,
       color: 'from-emerald-500 to-teal-600',
       iconBg: 'bg-emerald-500/10',
       iconColor: 'text-emerald-400',
-    },
-    {
-      title: 'Novos Leads (Bot)',
-      value: totalNovosLeads.toLocaleString('pt-BR'),
-      subtitle: 'Life Plans Novos Leads',
-      icon: MessageSquare,
-      color: 'from-blue-500 to-cyan-600',
-      iconBg: 'bg-blue-500/10',
-      iconColor: 'text-blue-400',
     },
     {
       title: 'Campanhas Ativas',
@@ -63,7 +50,7 @@ export default function KPICards({ rastreamento, rastreamentoOF, novosLeads }: K
     {
       title: 'Taxa de Cotacao',
       value: `${taxaCotacao}%`,
-      subtitle: `${cotouCount} cotaram de ${totalLeadsOF}`,
+      subtitle: `${cotouCount} cotaram de ${totalLeads}`,
       icon: TrendingUp,
       color: 'from-rose-500 to-pink-600',
       iconBg: 'bg-rose-500/10',
@@ -71,12 +58,21 @@ export default function KPICards({ rastreamento, rastreamentoOF, novosLeads }: K
     },
     {
       title: 'Conjuntos de Anuncios',
-      value: new Set(rastreamento.map(r => r.Conjunto).filter(Boolean)).size.toString(),
+      value: new Set(rastreamentoOF.map(r => r.Conjunto).filter(Boolean)).size.toString(),
       subtitle: 'Publicos segmentados',
       icon: BarChart3,
       color: 'from-violet-500 to-fuchsia-600',
       iconBg: 'bg-violet-500/10',
       iconColor: 'text-violet-400',
+    },
+    {
+      title: 'Total de Anuncios',
+      value: uniqueAds.toString(),
+      subtitle: 'Criativos unicos',
+      icon: Megaphone,
+      color: 'from-blue-500 to-cyan-600',
+      iconBg: 'bg-blue-500/10',
+      iconColor: 'text-blue-400',
     },
   ]
 

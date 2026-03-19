@@ -16,9 +16,9 @@ import InsightsPanel from '@/components/InsightsPanel'
 import RecentLeads from '@/components/RecentLeads'
 
 export default function Dashboard() {
-  const { rastreamento, rastreamentoOF, novosLeads, loading, lastUpdate, refetch } = useSupabaseData()
+  const { rastreamentoOF, loading, lastUpdate, refetch } = useSupabaseData()
 
-  if (loading && rastreamento.length === 0) {
+  if (loading && rastreamentoOF.length === 0) {
     return <LoadingSkeleton />
   }
 
@@ -57,47 +57,37 @@ export default function Dashboard() {
       {/* Content */}
       <main className="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
         {/* KPI Cards */}
-        <KPICards
-          rastreamento={rastreamento}
-          rastreamentoOF={rastreamentoOF}
-          novosLeads={novosLeads}
-        />
+        <KPICards rastreamentoOF={rastreamentoOF} />
 
         {/* Timeline Chart */}
-        <TimelineChart
-          rastreamento={rastreamento}
-          rastreamentoOF={rastreamentoOF}
-        />
+        <TimelineChart rastreamentoOF={rastreamentoOF} />
 
         {/* Campaign & Etiqueta */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CampaignRanking rastreamento={rastreamento} />
+          <CampaignRanking rastreamentoOF={rastreamentoOF} />
           <EtiquetaChart rastreamentoOF={rastreamentoOF} />
         </div>
 
         {/* Ad Ranking */}
-        <AdRanking rastreamento={rastreamento} />
+        <AdRanking rastreamentoOF={rastreamentoOF} />
 
         {/* Conjunto Analysis + Recent Leads */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ConjuntoAnalysis rastreamento={rastreamento} />
-          <RecentLeads rastreamento={rastreamento} />
+          <ConjuntoAnalysis rastreamentoOF={rastreamentoOF} />
+          <RecentLeads rastreamentoOF={rastreamentoOF} />
         </div>
 
         {/* Etiqueta Cross Reference */}
         <EtiquetaCrossRef rastreamentoOF={rastreamentoOF} />
 
         {/* Insights */}
-        <InsightsPanel
-          rastreamento={rastreamento}
-          rastreamentoOF={rastreamentoOF}
-        />
+        <InsightsPanel rastreamentoOF={rastreamentoOF} />
 
         {/* Footer */}
         <footer className="text-center py-8 text-xs text-muted border-t border-border">
           <p>Life Plans Dashboard &mdash; Dados em tempo real via Supabase</p>
           <p className="mt-1">
-            {rastreamento.length} leads trafego &middot; {rastreamentoOF.length} leads OF &middot; {novosLeads.length} novos leads
+            {rastreamentoOF.length} leads rastreados
           </p>
         </footer>
       </main>

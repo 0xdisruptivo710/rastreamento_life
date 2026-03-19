@@ -30,14 +30,10 @@ async function fetchAllRows(table: string, orderCol = 'id') {
 
 export async function GET() {
   try {
-    const [rastreamento, rastreamentoOF, novosLeads] = await Promise.all([
-      fetchAllRows('Rastreamento_life'),
-      fetchAllRows('Rastreamento_life_OF'),
-      fetchAllRows('life_plans_novos_leads'),
-    ])
+    const rastreamentoOF = await fetchAllRows('Rastreamento_life_OF')
 
     return NextResponse.json(
-      { rastreamento, rastreamentoOF, novosLeads },
+      { rastreamentoOF },
       {
         headers: {
           'Cache-Control': 'no-store, max-age=0',
